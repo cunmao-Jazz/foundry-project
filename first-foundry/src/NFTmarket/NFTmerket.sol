@@ -25,26 +25,33 @@ contract NFTMarket is IERC721Receiver  {
     }
 
     function list(uint256 tokenId, uint256 price ) public {
+
+        require(price > 0, "This NFT is not for sale.");
+
         require(nftContract.ownerOf(tokenId) == msg.sender,"Not the owner");
-        require(nftContract.getApproved(tokenId) == address(this),"NFT not approved");
+
+        require(nftContract.isApprovedForAll(msg.sender, address(this)) || nftContract.getApproved(tokenId) == address(this), "NFT not approved");
 
         listings[tokenId] = Listing({seller: msg.sender,price: price});
-        nftContract.safeTransferFrom(msg.sender, address(this), tokenId);
-
         emit NFTListed(tokenId,msg.sender,price);
     }
 
     function buy(uint256 tokenId) external {
+
         Listing memory listing = listings[tokenId];
-        require(listing.price > 0, "This NFT is not for sale.");
+
+        require(listing.seller != address(0), "This NFT is not for sale.");
+
+        require(listing.seller != msg.sender,"Cannot purchase NFTs that are self listed");
 
         require(paymentToken.balanceOf(msg.sender) >= listing.price, "Insufficient token balance.");
 
         require(paymentToken.allowance(msg.sender, address(this)) >= listing.price, "Insufficient allowance.");
 
-        require(paymentToken.transferFrom(msg.sender, listing.seller, listing.price), "Token transfer failed.");
 
-        nftContract.safeTransferFrom(address(this), msg.sender, tokenId);
+        paymentToken.transferFrom(msg.sender, listing.seller, listing.price);
+
+        nftContract.safeTransferFrom(listing.seller, msg.sender, tokenId);
 
         delete listings[tokenId];
 
@@ -53,15 +60,22 @@ contract NFTMarket is IERC721Receiver  {
     }
 
     function tokensReceived(address from, uint256 amount, bytes calldata data) external {
+        require(msg.sender == address(paymentToken), "Invalid sender");
+        
         uint256 tokenId = abi.decode(data, (uint256));
-
         Listing memory listing = listings[tokenId];
+
+        require(listing.seller != address(0), "This NFT is not for sale.");
+
+        require(listing.seller != from,"Cannot purchase NFTs that are self listed");
+
         require(listing.price > 0, "This NFT is not for sale.");
+
         require(amount >= listing.price, "Insufficient token amount sent.");
 
-        nftContract.safeTransferFrom(address(this), from, tokenId);
 
         paymentToken.transferFrom(from, listing.seller, listing.price);
+        nftContract.safeTransferFrom(listing.seller, from, tokenId);
 
         delete listings[tokenId];
 
