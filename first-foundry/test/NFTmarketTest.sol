@@ -23,8 +23,6 @@ contract NFTmarketTest is StdInvariant,Test {
 
         excludeContract(address(erc20));
         excludeContract(address(erc721));
-
-        // 设置不变量测试的目标合约为 market
         targetContract(address(market));
 
     }
