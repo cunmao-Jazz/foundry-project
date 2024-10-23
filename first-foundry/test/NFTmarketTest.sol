@@ -25,6 +25,8 @@ contract NFTmarketTest is StdInvariant,Test {
         excludeContract(address(erc721));
         targetContract(address(market));
 
+        
+
     }
 
     function helperSetupUserAndMintNFT(address user, uint256 tokenId) internal {
