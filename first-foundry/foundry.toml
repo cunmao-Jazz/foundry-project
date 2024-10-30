@@ -3,4 +3,9 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
+[etherscan]
+sepolia = { key = "W9S1EVC4D79CZSV66ZQV5S213QDNN3C77N" }
+[rpc_endpoints]
+sepolia = "https://ethereum-sepolia-rpc.publicnode.com"
+sepolia_backup = "https://api.zan.top/eth-sepolia"
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
