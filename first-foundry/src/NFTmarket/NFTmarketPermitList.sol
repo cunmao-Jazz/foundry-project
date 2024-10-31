@@ -15,7 +15,6 @@ contract NFTmarketPermitList is IERC721Receiver, EIP712 {
         uint256 price;
     }
 
-    bytes32 public constant LISTING_TYPEHASH = keccak256("Listing(address seller,uint256 tokenId,uint256 price)");
     mapping(uint256 => Listing) public listings;
 
     event NFTListed(uint256 indexed tokenId, address indexed seller, uint256 price);
