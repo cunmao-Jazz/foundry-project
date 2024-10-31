@@ -4,7 +4,7 @@ out = "out"
 libs = ["lib"]
 
 [etherscan]
-sepolia = { key = "XBVHA4PUBH4VB18TA8ZEKPBIR8U3FRK5C5" }
+sepolia = { key = "NBHMA2RMXVZBZBWVMUNJD6PU646965411Y" }
 [rpc_endpoints]
 sepolia = "https://ethereum-sepolia-rpc.publicnode.com"
 sepolia_backup = "https://api.zan.top/eth-sepolia"

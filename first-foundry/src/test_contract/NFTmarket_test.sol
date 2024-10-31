@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../NFTmarket/NFTmerket.sol";
+import "../NFTmarket/NFTmarketPermitList.sol";
 
-contract NFTMarket_test is NFTMarket(0x6D0d5c1CCdB9357dD09860d7afB8aDc152031528,0xD11342f94a5b7f02f3Aff95815Eddf1BdC63ED12) {
+contract NFTMarketPermit_test is NFTmarketPermitList(0xEd9703B864e53Bfa787745D33bF6786A42BB458E) {
 
 }

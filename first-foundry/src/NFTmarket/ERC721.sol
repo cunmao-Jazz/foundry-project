@@ -5,11 +5,16 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+
 import "./isContract.sol";
-contract BaseERC721 {
+contract BaseERC721 is EIP712 {
     using Strings for uint256;
     using Address for address;
-
+    bytes32 private constant PERMIT_TYPEHASH =
+        keccak256("Permit(address owner,address approve,uint256 tokenId)");
     // Token name
     string private _name;
 
@@ -31,6 +36,8 @@ contract BaseERC721 {
     // Mapping from owner to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
+    //sig error
+    error ERC2612InvalidSigner(address signer, address owner);
     /**
      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
      */
@@ -65,7 +72,7 @@ contract BaseERC721 {
         string memory name_,
         string memory symbol_,
         string memory baseURI_
-    ) {
+    )EIP712(name_, "1") {
         _name = name_;
         _symbol = symbol_;
         _baseURI = baseURI_;
@@ -131,7 +138,25 @@ contract BaseERC721 {
 
         emit Transfer(address(0), to, tokenId);
     }
+    function permit(
+        address owner,
+        address approve,
+        uint256 tokenId,
+        bytes memory signature
+    ) public virtual {
 
+
+        bytes32 structHash = keccak256(abi.encode(PERMIT_TYPEHASH, owner, approve, tokenId));
+
+        bytes32 hash = _hashTypedDataV4(structHash);
+
+        address signer = ECDSA.recover(hash, signature);
+        if (signer != owner) {
+            revert ERC2612InvalidSigner(signer, owner);
+        }
+
+        _approve(approve, tokenId);
+    }
     /**
      * @dev See {IERC721-balanceOf}.
      */

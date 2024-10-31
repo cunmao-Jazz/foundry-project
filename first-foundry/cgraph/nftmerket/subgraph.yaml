@@ -1,0 +1,32 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: NFTMarketPermit_test
+    network: sepolia
+    source:
+      address: "0xB37A631E85Ef0C2af90EfAa19040066CAFD37b89"
+      abi: NFTMarketPermit_test
+      startBlock: 6983753
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - EIP712DomainChanged
+        - NFTListed
+        - NFTPurchased
+      abis:
+        - name: NFTMarketPermit_test
+          file: ./abis/NFTMarketPermit_test.json
+      eventHandlers:
+        - event: EIP712DomainChanged()
+          handler: handleEIP712DomainChanged
+        - event: NFTListed(indexed uint256,indexed address,uint256)
+          handler: handleNFTListed
+        - event: NFTPurchased(indexed uint256,indexed address,uint256)
+          handler: handleNFTPurchased
+      file: ./src/nft-market-permit-test.ts
