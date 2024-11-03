@@ -124,7 +124,7 @@ contract IMintableTokenTest is Test {
     function testClaimTokens() public {
         vm.startPrank(owner);
 
-=        idoPersale.startPresale(
+        idoPersale.startPresale(
             address(token),
             10 ether, // fundraisingGoal
             150 ether, // fundraisingCap
