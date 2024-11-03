@@ -53,7 +53,6 @@ contract IMintableTokenTest is Test {
             block.timestamp + 86400
         );
 
-        // 启动预售
         idoPersale.startPresale(
             address(token),
             100 ether, // fundraisingGoal
@@ -81,7 +80,6 @@ contract IMintableTokenTest is Test {
     function testBuyTokens() public {
         vm.startPrank(owner);
 
-        // 启动预售
         idoPersale.startPresale(
             address(token),
             100 ether, // fundraisingGoal
@@ -126,8 +124,7 @@ contract IMintableTokenTest is Test {
     function testClaimTokens() public {
         vm.startPrank(owner);
 
-        // 启动预售
-        idoPersale.startPresale(
+=        idoPersale.startPresale(
             address(token),
             10 ether, // fundraisingGoal
             150 ether, // fundraisingCap
@@ -156,7 +153,6 @@ contract IMintableTokenTest is Test {
         vm.startPrank(user2);
         idoPersale.claimTokens();
 
-        // 检查代币余额
         uint256 user1Tokens = token.balanceOf(user1);
         uint256 user2Tokens = token.balanceOf(user2);
         console.log(user1Tokens);
@@ -166,7 +162,6 @@ contract IMintableTokenTest is Test {
 
     // Test presale failed users get their funds back
      function testClaimRefund() public {
-        // 启动预售
         vm.startPrank(owner);
         idoPersale.startPresale(
             address(token),
@@ -222,14 +217,12 @@ contract IMintableTokenTest is Test {
         );
         vm.stopPrank();
 
-        // 用户1购买50 ether
-        vm.deal(user1, 100 ether); // 给 user1 一些 ETH
+        vm.deal(user1, 100 ether); 
         vm.startPrank(user1);
         idoPersale.buyTokens{value: 50 ether}();
         vm.stopPrank();
 
-        // 用户2购买50 ether
-        vm.deal(user2, 100 ether); // 给 user2 一些 ETH
+        vm.deal(user2, 100 ether); 
         vm.startPrank(user2);
         idoPersale.buyTokens{value: 50 ether}();
         vm.stopPrank();
