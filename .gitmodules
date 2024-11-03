@@ -19,3 +19,6 @@
 [submodule "IDOAndPledge/lib/forge-std"]
 	path = IDOAndPledge/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "IDOAndPledge/lib/openzeppelin-contracts"]
+	path = IDOAndPledge/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
