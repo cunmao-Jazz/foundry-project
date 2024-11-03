@@ -75,7 +75,6 @@ contract BaseERC20 {
 
        return true;
     }
-
     function approve(address _spender, uint256 _value) public returns (bool success) {
         // write your code here
         allowances[msg.sender][_spender] = _value;
