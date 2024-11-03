@@ -16,3 +16,6 @@
 [submodule "Permit2/lib/permit2"]
 	path = Permit2/lib/permit2
 	url = https://github.com/Uniswap/permit2
+[submodule "IDOAndPledge/lib/forge-std"]
+	path = IDOAndPledge/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
