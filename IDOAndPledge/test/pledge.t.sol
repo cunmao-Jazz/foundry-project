@@ -10,18 +10,20 @@ import "../src/pledge/pledge.sol";
  */
 contract TokenPledgeTest is Test {
     TokenPledge public tokenPledge;
-    MockToken public RNT;
-    MockToken public esRNT;
+    esRNTToken public RNT;
+    esRNTToken public esRNT;
     address public user;
 
     /**
      * @dev 设置测试环境
      */
     function setUp() public {
-        RNT = new MockToken("RNT Token", "RNT");
-        esRNT = new MockToken("esRNT Token", "esRNT");
+        RNT = new esRNTToken("RNT Token", "RNT");
+        esRNT = new esRNTToken("esRNT Token", "esRNT");
 
         tokenPledge = new TokenPledge(IERC20(address(RNT)), IEsRNT(address(esRNT)));
+        
+        esRNT.transferOwnership(address(tokenPledge));
 
         user = address(7);
 
@@ -48,7 +50,7 @@ contract TokenPledgeTest is Test {
 
         vm.warp(block.timestamp + 1 days);
 
-        tokenPledge.convertEsRNT(200);
+        tokenPledge.convertEsRNT(1);
 
         uint256 userRNTBalance = RNT.balanceOf(user);
         console.log("userRNTBalance",userRNTBalance);
@@ -75,7 +77,7 @@ contract TokenPledgeTest is Test {
 
         vm.warp(block.timestamp + 15 days);
 
-        tokenPledge.convertEsRNT(200);
+        tokenPledge.convertEsRNT(1);
 
         uint256 userRNTBalance = RNT.balanceOf(user);
         console.log("userRNTBalance",userRNTBalance);

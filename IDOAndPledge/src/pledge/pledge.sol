@@ -3,14 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "./interfase.sol";
 
-/**
- * @dev IEsRNT 接口，扩展了 IERC20，包含 mint 和 burn 函数。
- */
-interface IEsRNT is IERC20 {
-    function mint(address to, uint256 amount) external;
-    function burn(uint256 amount) external;
-}
 
 contract TokenPledge is ReentrancyGuard {
     IERC20 public RNT;
@@ -22,14 +16,8 @@ contract TokenPledge is ReentrancyGuard {
         uint256 lastUpdateTime;  // 上一次更新奖励的时间
     }
 
-    struct LockedEsRNT {
-        uint256 amount;      // 锁定的 esRNT 数量
-        uint256 startTime;   // 锁定开始时间
-        uint256 endTime;     // 锁定结束时间（startTime + 30天）
-    }
 
     mapping(address => StakeInfo) public stakes;
-    mapping(address => LockedEsRNT[]) public lockedEsRNTs;
 
     uint256 public rewardRate = 1; // 每个 RNT 每天奖励的 esRNT 数量
     uint256 public constant unlockPeriod = 30 days; // esRNT 锁定期
@@ -37,14 +25,9 @@ contract TokenPledge is ReentrancyGuard {
     // 事件定义
     event Staked(address indexed user, uint256 amount);
     event Unstaked(address indexed user, uint256 amount);
-    event RewardClaimed(address indexed user, uint256 reward);
-    event EsRNTConverted(address indexed user, uint256 amount, uint256 redeemed, uint256 burned);
+    event RewardClaimed(address indexed user, uint256 reward, uint256 eventId);
+    event EsRNTConverted(address indexed user, uint256 amount, uint256 redeemed, uint256 burned, uint256 eventId);
 
-    /**
-     * @dev 构造函数，初始化 RNT 和 esRNT 代币。
-     * @param _RNT RNT 代币地址。
-     * @param _esRNT esRNT 代币地址。
-     */
     constructor(IERC20 _RNT, IEsRNT _esRNT){
         RNT = _RNT;
         esRNT = _esRNT;
@@ -101,80 +84,32 @@ contract TokenPledge is ReentrancyGuard {
         require(reward > 0, "No reward to claim");
 
         stakes[msg.sender].unclaimed = 0;
-        esRNT.mint(msg.sender, reward);
+        
+        uint256 eventId = esRNT.mint(msg.sender, reward);
 
-        // 记录锁定信息
-        // 记录锁定信息，设定锁定期为30天
-        lockedEsRNTs[msg.sender].push(LockedEsRNT({
-            amount: reward,
-            startTime: block.timestamp,
-            endTime: block.timestamp + 30 days
-        }));
-
-        emit RewardClaimed(msg.sender, reward);
+        emit RewardClaimed(msg.sender, reward, eventId);
     }
 
     /**
-     * @dev 用户转换 esRNT 为 RNT，支持提前赎回但锁定部分将被销毁。
-     * @param amount 需要转换的 esRNT 数量。
+     * @dev 用户使用esRNT 兑换 RNT 奖励。
+    * @param eventId claim  eventId。
      */
-    function convertEsRNT(uint256 amount) external AmountVerification(amount) nonReentrant {
-    require(esRNT.balanceOf(msg.sender) >= amount, "Insufficient esRNT balance.");
-    require(esRNT.allowance(msg.sender, address(this)) >= amount, "Insufficient allowance.");
+    function convertEsRNT(uint256 eventId) external nonReentrant {
+        (uint256 amount, uint256 unlocked, uint256 burned) = esRNT.calculateUnlockAndBurn(msg.sender, eventId);
 
-    uint256 redeemed = 0; // 最终赎回的 RNT 数量
-    uint256 burned = 0;   // 未解锁而被销毁的 esRNT 数量
+        require(esRNT.transferFrom(msg.sender, address(this), amount), "Transfer failed");
 
-    LockedEsRNT[] storage userLocks = lockedEsRNTs[msg.sender];
-    uint256 len = userLocks.length;
-
-    for (uint256 i = 0; i < len && amount > 0; i++) {
-        uint256 unlocked = 0;
-
-        if (block.timestamp >= userLocks[i].endTime) {
-            // 锁定期已结束，完全解锁
-            unlocked = userLocks[i].amount;
-        } else if (block.timestamp > userLocks[i].startTime) {
-            // 部分解锁，按比例线性释放
-            uint256 elapsed = block.timestamp - userLocks[i].startTime;
-            uint256 duration = userLocks[i].endTime - userLocks[i].startTime;
-            unlocked = (userLocks[i].amount * elapsed) / duration;
+        if (unlocked > 0) {
+            RNT.transfer(msg.sender, unlocked);
+        }
+        
+        if (burned > 0) {
+            esRNT.burn(burned);
         }
 
-        // `available` 是该锁仓条目中当前可以赎回的部分
-        uint256 available = unlocked > userLocks[i].amount ? userLocks[i].amount : unlocked;
+        esRNT.clearLock(msg.sender, eventId);
 
-        if (available > 0) {
-            if (available <= amount) {
-                redeemed += available;
-                amount -= available;
-                userLocks[i].amount -= available;
-            } else {
-                redeemed += amount;
-                userLocks[i].amount -= amount;
-                amount = 0;
-            }
-        }
-    }
-
-    // 剩余的未到期的 esRNT 将被销毁
-    if (amount > 0) {
-        burned = amount;
-    }
-
-    require(redeemed > 0 || burned > 0, "Nothing to unlock yet");
-
-    esRNT.transferFrom(msg.sender, address(this), redeemed + burned);
-
-    if (redeemed > 0) {
-        RNT.transfer(msg.sender, redeemed);
-    }
-
-    if (burned > 0) {
-        esRNT.burn(burned);
-    }
-
-    emit EsRNTConverted(msg.sender, redeemed + burned, redeemed, burned);
+        emit EsRNTConverted(msg.sender, amount, unlocked, burned, eventId);
 }
 
     /**
@@ -194,8 +129,8 @@ contract TokenPledge is ReentrancyGuard {
      * @param user 用户地址。
      * @return 用户的所有 LockedEsRNT 数组。
      */
-    function getLockedEsRNT(address user) external view returns (LockedEsRNT[] memory) {
-        return lockedEsRNTs[user];
+    function getLockedEsRNT(address user, uint256 eventId) external view returns (IEsRNT.LockedEsRNT memory) {
+        return esRNT.getLockedEsRNT(user, eventId);
     }
 
     /**
