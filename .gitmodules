@@ -25,3 +25,6 @@
 [submodule "Slot/lib/forge-std"]
 	path = Slot/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "Slot/lib/openzeppelin-contracts"]
+	path = Slot/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
