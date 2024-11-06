@@ -31,3 +31,6 @@
 [submodule "contract-upgrade/lib/forge-std"]
 	path = contract-upgrade/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "contract-upgrade/lib/openzeppelin-foundry-upgrades"]
+	path = contract-upgrade/lib/openzeppelin-foundry-upgrades
+	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
