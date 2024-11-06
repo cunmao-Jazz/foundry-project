@@ -34,3 +34,6 @@
 [submodule "contract-upgrade/lib/openzeppelin-foundry-upgrades"]
 	path = contract-upgrade/lib/openzeppelin-foundry-upgrades
 	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
+[submodule "contract-upgrade/lib/openzeppelin-contracts-upgradeable"]
+	path = contract-upgrade/lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
