@@ -58,30 +58,6 @@ contract NFTMarket is IERC721Receiver  {
         emit NFTPurchased(tokenId, msg.sender, listing.price);
 
     }
-
-    function tokensReceived(address from, uint256 amount, bytes calldata data) external {
-        require(msg.sender == address(paymentToken), "Invalid sender");
-        
-        uint256 tokenId = abi.decode(data, (uint256));
-        Listing memory listing = listings[tokenId];
-
-        require(listing.seller != address(0), "This NFT is not for sale.");
-
-        require(listing.seller != from,"Cannot purchase NFTs that are self listed");
-
-        require(listing.price > 0, "This NFT is not for sale.");
-
-        require(amount >= listing.price, "Insufficient token amount sent.");
-
-
-        paymentToken.transferFrom(from, listing.seller, listing.price);
-        nftContract.safeTransferFrom(listing.seller, from, tokenId);
-
-        delete listings[tokenId];
-
-        emit NFTPurchased(tokenId, from, listing.price);
-    }
-
      function onERC721Received(
         address operator,
         address from,

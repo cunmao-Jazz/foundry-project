@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
-contract NFTmarketPermitList is IERC721Receiver, EIP712 {
+contract NFTmarketV2 is IERC721Receiver, EIP712 {
     BaseERC721 public nftContract;
 
     struct Listing {
