@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -28,27 +28,5 @@ contract InscriptionToken is ERC20 {
         totalMinted+=perMint;
         _mint(to, perMint);
 
-    }
-}
-
-contract FactoryContract{
-     event InscriptionDeployed(address tokenAddress);
-
-    function deployInscription(string memory symbol, uint256 totalSupply, uint256 perMint) public returns(address) {
-            InscriptionToken token = new InscriptionToken (
-                symbol,
-                symbol,
-                totalSupply,
-                perMint,
-                address(this)
-            );
-
-            emit InscriptionDeployed(address(token));
-            return address(token);
-    }
-
-    function mintInscription(address tokenAddr) public {
-        InscriptionToken token = InscriptionToken(tokenAddr);
-        token.mint(msg.sender);
     }
 }
