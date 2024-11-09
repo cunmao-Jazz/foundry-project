@@ -80,7 +80,7 @@ contract AirdopMerkleNFTMarket is IERC721Receiver  {
         emit NFTPurchased(tokenId, msg.sender, discountedPrice);
     }
     function multicall(bytes[] calldata data) external returns (bytes[] memory results){
-        results = new bytes[](data.length); // 初始化 results 数组
+        results = new bytes[](data.length);
         for(uint i = 0; i < data.length; i++){
             (bool success, bytes memory result) = address(this).delegatecall(data[i]);
             require(success, "Multicall: call failed");
