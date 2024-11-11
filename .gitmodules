@@ -43,3 +43,6 @@
 [submodule "contract-monitor/lib/forge-std"]
 	path = contract-monitor/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "contract-monitor/lib/chainlink"]
+	path = contract-monitor/lib/chainlink
+	url = https://github.com/smartcontractkit/chainlink
