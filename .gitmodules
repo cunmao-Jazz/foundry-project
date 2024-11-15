@@ -49,3 +49,6 @@
 [submodule "flashbots-test/lib/forge-std"]
 	path = flashbots-test/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "flashbots-test/lib/openzeppelin-contracts"]
+	path = flashbots-test/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
