@@ -52,3 +52,15 @@
 [submodule "flashbots-test/lib/openzeppelin-contracts"]
 	path = flashbots-test/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "Dex/lib/forge-std"]
+	path = Dex/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "Dex/lib/openzeppelin-contracts"]
+	path = Dex/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "Dex/lib/v2-core"]
+	path = Dex/lib/v2-core
+	url = https://github.com/Uniswap/v2-core
+[submodule "Dex/lib/v2-periphery"]
+	path = Dex/lib/v2-periphery
+	url = https://github.com/Uniswap/v2-periphery
